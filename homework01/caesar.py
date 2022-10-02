@@ -31,10 +31,8 @@ def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
       ciphertext += chr(a[i])
   return ciphertext
 
-
 def decrypt_caesar(ciphertext: str, shift: int = 3) -> str:
     return encrypt_caesar(ciphertext, -shift)
-
 
 def caesar_breaker_brute_force(ciphertext: str, dictionary: tp.Set[str]) -> int:
     """
