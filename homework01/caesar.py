@@ -1,5 +1,6 @@
 import typing as tp
 
+
 def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
   ciphertext = ""
   if shift  < 0:
