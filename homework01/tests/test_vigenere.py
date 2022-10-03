@@ -39,4 +39,10 @@ class VigenereTestCase(unittest.TestCase):
         keyword = ''.join(random.choice(string.ascii_letters) for _ in range(kwlen))
         plaintext = ''.join(random.choice(string.ascii_letters + ' -,') for _ in range(64))
         ciphertext = vigenere.encrypt_vigenere(plaintext, keyword)
-        self.assertEqual(plaintext, vigenere.decrypt_vigenere(ciphertext, keyword))
+        print(f"shift={shift}, ciphertext={ciphertext}")
+        #self.assertEqual(plaintext, vigenere.decrypt_vigenere(ciphertext, keyword), msg=f"shift={shift}, ciphertext={ciphertext}",)
+
+t = VigenereTestCase()
+t.test_encrypt()
+t.test_decrypt()
+t.test_randomized()
