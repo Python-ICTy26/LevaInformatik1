@@ -30,7 +30,10 @@ def extended_gcd(a: int, b: int):
 
 def multiplicative_inverse(e: int, phi: int) -> int:
     gcd_res = extended_gcd(e, phi)
-    return gcd_res[1] if gcd_res[1] >= 0 else gcd_res[1] + max(e, phi)
+    if gcd_res[1] >= 0:
+        return gcd_res[1]
+    else:
+        return gcd_res[1] + max(e, phi)
 
 
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
