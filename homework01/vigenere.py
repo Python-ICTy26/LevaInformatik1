@@ -3,9 +3,9 @@ def encrypt_vigenere(plaintext: str, keyword: str) -> str:
 
     for i in range(len(plaintext)):
         l = ord(plaintext[i])
-        shift = ord(keyword[i % len(keyword)]) #смещене
+        shift = ord(keyword[i % len(keyword)])  # смещене
 
-        k = ord(keyword[i % len(keyword)]) #порядковый номер, A-Z, a-z
+        k = ord(keyword[i % len(keyword)])  # порядковый номер, A-Z, a-z
         if k >= ord("a") and k <= ord("z"):
             shift -= ord("a")
         else:
