@@ -20,16 +20,17 @@ def gcd(a: int, b: int) -> int:
             max_del = i
     return max_del
 
+
 def extended_gcd(a: int, b: int):
-  if a == 0:
-    return (b, 0, 1)
-  temp = extended_gcd(b % a, a)
-  return (temp[0], temp[2] - (b // a) * temp[1], temp[1])
+    if a == 0:
+        return (b, 0, 1)
+    temp = extended_gcd(b % a, a)
+    return (temp[0], temp[2] - (b // a) * temp[1], temp[1])
+
 
 def multiplicative_inverse(e: int, phi: int) -> int:
     gcd_res = extended_gcd(e, phi)
     return gcd_res[1] if gcd_res[1] > 0 else gcd_res[1] + max(e, phi)
-
 
 
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
