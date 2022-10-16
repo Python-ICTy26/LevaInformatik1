@@ -103,20 +103,25 @@ def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:
 
 
 def check_solution(solution: tp.List[tp.List[str]]) -> bool:
-    pos = []
-    for i in range(len(solution)):
-        for j in range(len(solution)):
-            pos = [i, j]
-            row = get_row(solution, pos)
-            col = get_col(solution, pos)
-            block = get_block(solution, pos)
-            if len(row) == len(set(row)) and len(set(col)) == len(scol) and len(block) == len(set(block)):
-                return True
-    return False
-
-    """ Если решение solution верно, то вернуть True, в противном случае False """
-    # TODO: Add doctests with bad puzzles
-
+    blocks_addr = [
+        (0, 0), (0, 3), (0, 6),
+        (3, 0), (3, 3), (3, 6),
+        (6, 0), (6, 3), (6, 6)
+    ]
+    for i in range(9):
+        temp_block = set(get_block(solution, blocks_addr[i]))
+        temp_row = set(get_row(solution, (0, i)))
+        temp_col = set(get_col(solution, (i, 0)))
+        if "." in temp_block or "." in temp_row or "." in temp_col:
+            return False
+        if len(temp_block) != 9 or len(temp_col) != 9 or len(temp_row) != 9:
+            return False
+        temp_block = list(map(int, temp_block))
+        temp_row = list(map(int, temp_row))
+        temp_col = list(map(int, temp_col))
+        if sum(temp_block) != 45 or sum(temp_row) != 45 or sum(temp_col) != 45:
+            return False
+    return True
 
 def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     """Генерация судоку заполненного на N элементов
