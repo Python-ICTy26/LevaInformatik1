@@ -1,5 +1,6 @@
 import pathlib
 import typing as tp
+import random
 
 T = tp.TypeVar("T")
 
@@ -130,29 +131,25 @@ def check_solution(solution: tp.List[tp.List[str]]) -> bool:
     return True
 
 def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
-    """Генерация судоку заполненного на N элементов
-
-    >>> grid = generate_sudoku(40)
-    >>> sum(1 for row in grid for e in row if e == '.')
-    41
-    >>> solution = solve(grid)
-    >>> check_solution(solution)
-    True
-    >>> grid = generate_sudoku(1000)
-    >>> sum(1 for row in grid for e in row if e == '.')
-    0
-    >>> solution = solve(grid)
-    >>> check_solution(solution)
-    True
-    >>> grid = generate_sudoku(0)
-    >>> sum(1 for row in grid for e in row if e == '.')
-    81
-    >>> solution = solve(grid)
-    >>> check_solution(solution)
-    True
-    """
-    pass
-
+    matrix = [
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['4', '5', '6', '7', '8', '9', '1', '2', '3'],
+    ['7', '8', '9', '1', '2', '3', '4', '5', '6'],
+    ['2', '3', '4', '5', '6', '7', '8', '9', '1'],
+    ['5', '6', '7', '8', '9', '1', '2', '3', '4'],
+    ['8', '9', '1', '2', '3', '4', '5', '6', '7'],
+    ['3', '4', '5', '6', '7', '8', '9', '1', '2'],
+    ['6', '7', '8', '9', '1', '2', '3', '4', '5'],
+    ['9', '1', '2', '3', '4', '5', '6', '7', '8'],
+    ]
+    for i in range(random.randrange(1, 100)):
+        x = random.randrange(0, 3)
+        y = random.randrange(0, 3)
+        z = random.randrange(0, 3)
+        matrix[x * 3 + y], matrix[x * 3 + z] = matrix[x * 3 + z], matrix[x * 3 + y]
+    for i in range(max(0, 81 - N)):
+        matrix[i // 9][i % 9] = '.'
+    return matrix
 
 if __name__ == "__main__":
     for fname in ["puzzle1.txt", "puzzle2.txt", "puzzle3.txt"]:
