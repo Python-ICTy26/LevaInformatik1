@@ -45,18 +45,31 @@ def get_col(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[str
     return matrix_col
 
 def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[str]:
-    """Возвращает все значения из квадрата, в который попадает позиция pos
-
-    >>> grid = read_sudoku('puzzle1.txt')
-    >>> get_block(grid, (0, 1))
-    ['5', '3', '.', '6', '.', '.', '.', '9', '8']
-    >>> get_block(grid, (4, 7))
-    ['.', '.', '3', '.', '.', '1', '.', '.', '6']
-    >>> get_block(grid, (8, 8))
-    ['2', '8', '.', '.', '.', '5', '.', '7', '9']
-    """
-    pass
-
+    blocks = []
+    for i in range(0, 9, 3):
+        for j in range(0, 9, 3):
+            blocks.append(grid[i][j : j + 3] + grid[i + 1][j : j + 3] + grid[i + 2][j : j + 3])
+    if pos[0] < 3:
+        if pos[1] < 3:
+            return blocks[0]
+        elif pos[1] < 6:
+            return blocks[1]
+        else:
+            return blocks[2]
+    elif pos[0] < 6:
+        if pos[1] < 3:
+            return blocks[3]
+        elif pos[1] < 6:
+            return blocks[4]
+        else:
+            return blocks[5]
+    else:
+        if pos[1] < 3:
+            return blocks[6]
+        elif pos[1] < 6:
+            return blocks[7]
+        else:
+            return blocks[8]
 
 def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[int, int]]:
     for i in range(len(grid)):
@@ -96,9 +109,19 @@ def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:
 
 
 def check_solution(solution: tp.List[tp.List[str]]) -> bool:
+    pos = []
+    for i in range(len(solution)):
+        for j in range(len(solution)):
+            pos = [i, j]
+            row = get_row(solution, pos)
+            col = get_col(solution, pos)
+            block = get_block(solution, pos)
+            if len(row) == len(set(row)) and len(set(col)) == len(scol) and len(block) == len(set(block)):
+                return True
+    return False
+
     """ Если решение solution верно, то вернуть True, в противном случае False """
     # TODO: Add doctests with bad puzzles
-    pass
 
 
 def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
