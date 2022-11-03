@@ -17,7 +17,7 @@ class GameOfLife:
         self.height = height
         self.cell_size = cell_size
 
-        # Устанавливаем размер окна
+        # Устанавливаем размер окн
         self.screen_size = width, height
         # Создание нового окна
         self.screen = pygame.display.set_mode(self.screen_size)
