@@ -55,7 +55,7 @@ class GameOfLife:
                 if event.type == QUIT:
                     running = False
 
-            # Очистка экрана)
+            # Очистка экрана
             self.screen.fill(pygame.Color("white"))
 
             # Рисуем сетку и клетки
@@ -101,6 +101,23 @@ class GameOfLife:
                     rect_desc = (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size)
                     pygame.draw.rect(self.screen, pygame.Color("green"), rect_desc)
 
+    def is_valid_coordinates(self, top: int, left: int) -> bool:
+        """
+        Определяет, являются ли координаты top и left валидными для текущей сетки
+
+        Валидными считаются такие, которые не выходят за пределы поля
+
+        Parametrs
+        ---------
+        top : int
+            Индекс ряда, в котором находится точка
+        left : int
+            Индекс столбца, в котором находится точка
+        """
+        if top >= 0 and top < self.cell_height and left >= 0 and left < self.cell_width:
+            return True
+        return False
+
     def get_neighbours(self, cell: Cell) -> Cells:
         """
         Вернуть список соседних клеток для клетки `cell`.
@@ -119,27 +136,14 @@ class GameOfLife:
         out : Cells
             Список соседних клеток.
         """
-        get = lambda a, b: self.grid[a][b]
         res = []
-
-        y, x = cell[0], cell[1]
-
-        if x != 0:
-            res.append(get(y, x - 1))
-            if y != 0:
-                res.append(get(y - 1, x - 1))
-            if y != self.cell_height - 1:
-                res.append(get(y + 1, x - 1))
-        if x != self.cell_width - 1:
-            res.append(get(y, x + 1))
-            if y != 0:
-                res.append(get(y - 1, x + 1))
-            if y != self.cell_height - 1:
-                res.append(get(y + 1, x + 1))
-        if y != 0:
-            res.append(get(y - 1, x))
-        if y != self.cell_height - 1:
-            res.append(get(y + 1, x))
+        for i in [-1, 0, 1]:
+            for j in [-1, 0, 1]:
+                if i == 0 and j == 0:
+                    continue
+                top, left = cell[0] + i, cell[1] + j
+                if self.is_valid_coordinates(top, left):
+                    res.append(self.grid[top][left])
 
         return res
 
@@ -158,10 +162,11 @@ class GameOfLife:
             for j in range(self.cell_width):
                 temp = sum(self.get_neighbours((i, j)))
                 if self.grid[i][j] == 1:
-                    new_grid[i][j] = 1 if temp in [2, 3] else 0
+                    if temp == 2 or temp == 3:
+                        new_grid[i][j] = 1
                 else:
-                    new_grid[i][j] = 1 if temp == 3 else 0
-
+                    if temp == 3:
+                        new_grid[i][j] = 1
         return new_grid
 
 if __name__ == '__main__':
