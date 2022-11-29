@@ -1,5 +1,6 @@
 import textwrap
 import time
+import math
 import typing as tp
 from string import Template
 
@@ -34,19 +35,40 @@ def get_wall_execute(
     fields: tp.Optional[tp.List[str]] = None,
     progress=None,
 ) -> pd.DataFrame:
-    """
-    Возвращает список записей со стены пользователя или сообщества.
+    if count > max_count:
+        temp = []
 
-    @see: https://vk.com/dev/wall.get
+        for i in range(math.ceil(count // max_count)):
+            temp += get_wall_execute(owner_id=owner_id, domain=domain, offset=max_count*i, count=count-max_count,max_count=max_count, filter=filter, extended=extended, fields=fields)
+            time.sleep(0.5)
 
-    :param owner_id: Идентификатор пользователя или сообщества, со стены которого необходимо получить записи.
-    :param domain: Короткий адрес пользователя или сообщества.
-    :param offset: Смещение, необходимое для выборки определенного подмножества записей.
-    :param count: Количество записей, которое необходимо получить (0 - все записи).
-    :param max_count: Максимальное число записей, которое может быть получено за один запрос.
-    :param filter: Определяет, какие типы записей на стене необходимо получить.
-    :param extended: 1 — в ответе будут возвращены дополнительные поля profiles и groups, содержащие информацию о пользователях и сообществах.
-    :param fields: Список дополнительных полей для профилей и сообществ, которые необходимо вернуть.
-    :param progress: Callback для отображения прогресса.
+        return temp
+
+    code = f"""
+        var requestsCounter = 0;
+        const baseOffset = {offset};
+
+        var items = [];
+
+        while (requestsCounter < 25) {{
+            const result = API.wall.get({{
+                "owner_id": "{owner_id}",
+                "domain": "{domain}",
+                "offset": {count} * requestsCounter + baseOffset,
+                "count":"{count}",
+                "filter": "{filter}",
+                "extended": {extended},
+                "fields": {fields}
+            }});
+
+            requestsCounter = requestsCounter + 1;
+            lastRecordsReturned = result@.count;
+            items.push(result@.items);
+        }}
+
+        return items;
+
     """
-    pass
+
+    result = session.post('execute', data=code).json()['response']
+    return json_normalize(result['items'])
