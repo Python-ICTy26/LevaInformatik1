@@ -16,8 +16,7 @@ class FriendsResponse:
 
 
 def get_friends(
-    user_id: int, count: int = 5000, offset: int = 0, fields: tp.Optional[tp.List[str]] = None
-) -> FriendsResponse:
+    user_id: int, count: int = 5000, offset: int = 0, fields: tp.Optional[tp.List[str]] = None) -> FriendsResponse:
     """
     Получить список идентификаторов друзей пользователя или расширенную информацию
     о друзьях пользователя (при использовании параметра fields).
@@ -28,7 +27,8 @@ def get_friends(
     :param fields: Список полей, которые нужно получить для каждого пользователя.
     :return: Список идентификаторов друзей пользователя или список пользователей.
     """
-    pass
+    friends = session.get('friends.get', user_id=user_id, count=count, offset=offset, fields=fields).json()['response']
+    return FriendsResponse(friends['count'], friends['items'])
 
 
 class MutualFriends(tp.TypedDict):
@@ -57,4 +57,27 @@ def get_mutual(
     :param offset: Смещение, необходимое для выборки определенного подмножества общих друзей.
     :param progress: Callback для отображения прогресса.
     """
-    pass
+    if target_uids == None:
+        return session.get(
+            'friends.getMutual',
+            source_uid=source_uid,
+            target_uid=target_uid,
+            order=order,
+            count=count,
+            offset=offset
+        ).json()['response']
+
+    result = []
+    for i in range(math.ceil(len(target_uids) / 100)):
+        temp = session.get(
+            'friends.getMutual',
+            source_uid=source_uid,
+            target_uids=target_uids[i * 100 : min((i + 1) * 100, len(target_uids))],
+            order=order,
+            count=count,
+            offset=offset + i * 100
+        ).json()['response']
+        result += temp
+        time.sleep(0.5)
+
+    return result

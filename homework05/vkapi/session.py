@@ -1,8 +1,9 @@
 import typing as tp
 
 import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter, Retry
+
+from vkapi.config import VK_CONFIG
 
 
 class Session:
@@ -22,10 +23,33 @@ class Session:
         max_retries: int = 3,
         backoff_factor: float = 0.3,
     ) -> None:
-        pass
+        self.retries = Retry(total=max_retries, backoff_factor=backoff_factor, status_forcelist=[500])
+
+        self.session = requests.Session()
+        self.session.mount('https://', HTTPAdapter(max_retries=self.retries))
+        self.session.mount('http://', HTTPAdapter(max_retries=self.retries))
+
+        self.base_url = base_url
+        self.timeout = timeout
 
     def get(self, url: str, *args: tp.Any, **kwargs: tp.Any) -> requests.Response:
-        pass
+        payload = dict(kwargs)
+        payload['access_token'] = VK_CONFIG['access_token']
 
-    def post(self, url: str, *args: tp.Any, **kwargs: tp.Any) -> requests.Response:
-        pass
+        return self.session.get(
+            f'{self.base_url}/{url}',
+            params=payload,
+            timeout=self.timeout
+        )
+
+    def post(self, url: str, *args: tp.Any, data: tp.Any = None, json: tp.Any = None, **kwargs: tp.Any) -> requests.Response:
+        payload = dict(kwargs)
+        payload['access_token'] = VK_CONFIG['access_token']
+
+        return self.session.post(
+            f'{self.base_url}/{url}',
+            params=payload,
+            data=data,
+            json=json,
+            timeout=self.timeout
+        )
